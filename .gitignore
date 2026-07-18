@@ -4,3 +4,6 @@ ragenv
 /ragenv/*
 /ragenv
 ragenv/
+.venv/
+__pycache__/
+*.log

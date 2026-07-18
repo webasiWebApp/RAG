@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF RAG Chat Interface</title>
+    <meta name="description" content="Chat with your PDF documents using PostgreSQL pgvector and Gemini API">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">✨</span>
+                    <h2>RAG Chat</h2>
+                </div>
+            </div>
+            
+            <div class="sidebar-content">
+                <h3>Indexed Documents</h3>
+                <ul id="document-list" class="document-list">
+                    <li class="loading-docs">Loading documents...</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="status-badge">
+                    <span class="status-indicator online"></span>
+                    <span>Neon PostgreSQL Connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="main-panel">
+            <!-- Header/Tabs Navigation -->
+            <header class="main-header">
+                <nav class="tabs-nav" role="tablist">
+                    <button id="tab-chat" class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-chat">
+                        💬 Chat
+                    </button>
+                    <button id="tab-upload" class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-upload">
+                        📤 Upload Documents
+                    </button>
+                </nav>
+            </header>
+
+            <!-- Tab Panels -->
+            <div class="content-container">
+                <!-- Chat Panel -->
+                <section id="panel-chat" class="tab-panel active" role="tabpanel" aria-labelledby="tab-chat">
+                    <div class="chat-container">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="message system">
+                                <div class="message-bubble">
+                                    Welcome! Ask me anything about the indexed PDF documents. Sinhala and English are supported.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form id="chat-form" class="chat-form">
+                            <input type="text" id="chat-input" placeholder="Ask a question about the document..." required autocomplete="off">
+                            <button type="submit" id="send-btn">
+                                <span class="send-icon">➔</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Upload Panel -->
+                <section id="panel-upload" class="tab-panel" role="tabpanel" aria-labelledby="tab-upload" style="display: none;">
+                    <div class="upload-container">
+                        <div class="upload-card">
+                            <div id="drop-zone" class="drop-zone">
+                                <span class="upload-icon">📁</span>
+                                <h3>Drag & Drop PDF Here</h3>
+                                <p>or click to browse from your device</p>
+                                <input type="file" id="file-input" accept=".pdf" style="display: none;">
+                            </div>
+                            
+                            <div id="upload-status" class="upload-status" style="display: none;">
+                                <div class="progress-bar-container">
+                                    <div id="progress-bar" class="progress-bar"></div>
+                                </div>
+                                <p id="status-text">Uploading and processing... This may take a minute for large files.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

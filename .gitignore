@@ -4,3 +4,10 @@ ragenv
 /ragenv/*
 /ragenv
 ragenv/
+.venv/
+__pycache__/
+*.log
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

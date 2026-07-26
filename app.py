@@ -207,22 +207,30 @@ async def chat(request: QueryRequest):
         context_text = "\n\n".join(context_parts)
         
         # 3. Initialize model and generate answer
-        google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        if google_key:
-            os.environ["GOOGLE_API_KEY"] = google_key
-            llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash", temperature=0.1)
-            print("Using Gemini model for chat response")
-        else:
-            # Fallback to OpenAI
-            llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1)
-            print("Using OpenAI model for chat response")
-            
         prompt = ChatPromptTemplate.from_template(
             "Answer the question based only on the following context:\n{context}\n\nQuestion: {question}"
         )
         
-        chain = prompt | llm | StrOutputParser()
-        result_text = chain.invoke({"context": context_text, "question": query_text})
+        result_text = None
+        
+        # Try Gemini first
+        google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if google_key:
+            os.environ["GOOGLE_API_KEY"] = google_key
+            try:
+                llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash", temperature=0.1)
+                chain = prompt | llm | StrOutputParser()
+                result_text = chain.invoke({"context": context_text, "question": query_text})
+                print("Response generated using Gemini model")
+            except Exception as ge:
+                print(f"Gemini failed ({ge}), falling back to OpenAI")
+        
+        # Fallback to OpenAI if Gemini was unavailable or failed
+        if result_text is None:
+            llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1)
+            chain = prompt | llm | StrOutputParser()
+            result_text = chain.invoke({"context": context_text, "question": query_text})
+            print("Response generated using OpenAI model")
         
         return {
             "result": result_text,
@@ -275,4 +283,4 @@ app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
